@@ -132,7 +132,7 @@ function makeWord(lettersObject) {
   const letter = [];
   const chars = Object.keys(lettersObject);
   chars.forEach((c) =>
-    lettersObject[c].forEach(function (index) {
+    lettersObject[c].forEach((index) => {
       letter[index] = c;
     })
   );
