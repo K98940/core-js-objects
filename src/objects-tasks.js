@@ -154,8 +154,12 @@ function makeWord(lettersObject) {
  *    sellTickets([25, 25, 50]) => true
  *    sellTickets([25, 100]) => false (The seller does not have enough money to give change.)
  */
-function sellTickets(/* queue */) {
-  throw new Error('Not implemented');
+function sellTickets(queue) {
+  let summ = 0;
+  queue.forEach((bill) => {
+    summ = bill === 25 ? summ + 25 : summ - bill + 25;
+  });
+  return summ >= 0;
 }
 
 /**
@@ -171,8 +175,14 @@ function sellTickets(/* queue */) {
  *    console.log(r.height);      // => 20
  *    console.log(r.getArea());   // => 200
  */
-function Rectangle(/* width, height */) {
-  throw new Error('Not implemented');
+function Rectangle(width, height) {
+  return {
+    width,
+    height,
+    getArea() {
+      return width * height;
+    },
+  };
 }
 
 /**
@@ -185,8 +195,8 @@ function Rectangle(/* width, height */) {
  *    [1,2,3]   =>  '[1,2,3]'
  *    { width: 10, height : 20 } => '{"height":10,"width":20}'
  */
-function getJSON(/* obj */) {
-  throw new Error('Not implemented');
+function getJSON(obj) {
+  return JSON.stringify(obj);
 }
 
 /**
@@ -202,6 +212,9 @@ function getJSON(/* obj */) {
  */
 function fromJSON(/* proto, json */) {
   throw new Error('Not implemented');
+  // const obj = JSON.parse(json);
+  // console.log('proto =', proto);
+  // console.log('json =', json);
 }
 
 /**
@@ -230,8 +243,11 @@ function fromJSON(/* proto, json */) {
  *      { country: 'Russia',  city: 'Saint Petersburg' }
  *    ]
  */
-function sortCitiesArray(/* arr */) {
-  throw new Error('Not implemented');
+function sortCitiesArray(arr) {
+  return arr.sort((a, b) => {
+    if (a.country === b.country) return a.city.localeCompare(b.city);
+    return a.country.localeCompare(b.country);
+  });
 }
 
 /**
@@ -264,8 +280,18 @@ function sortCitiesArray(/* arr */) {
  *    "Poland" => ["Lodz"]
  *   }
  */
-function group(/* array, keySelector, valueSelector */) {
-  throw new Error('Not implemented');
+function group(array, keySelector, valueSelector) {
+  return array.reduce((map, obj) => {
+    const key = keySelector(obj);
+    const value = valueSelector(obj);
+
+    const record = map.get(key);
+    if (record) {
+      map.set(key, [...record, value]);
+    } else map.set(key, [value]);
+
+    return map;
+  }, new Map());
 }
 
 /**
