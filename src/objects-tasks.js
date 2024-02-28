@@ -349,32 +349,100 @@ function group(array, keySelector, valueSelector) {
  */
 
 const cssSelectorBuilder = {
-  element(/* value */) {
-    throw new Error('Not implemented');
+  result: '',
+  selectorsMap: {
+    element: 1,
+    id: 2,
+    class: 3,
+    attribute: 4,
+    pseudoClass: 5,
+    pseudoElement: 6,
+  },
+  selectorParts: [],
+
+  checkSequance(element) {
+    const errMsg = {
+      badOrder: `Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element`,
+      tooMuch:
+        'Element, id and pseudo-element should not occur more then one time inside the selector',
+    };
+    const selectors = [...this.selectorParts, element];
+    const isToMuch = (el) =>
+      selectors.filter((selector) => selector === el).length > 1;
+    if (
+      isToMuch(this.selectorsMap.element) ||
+      isToMuch(this.selectorsMap.id) ||
+      isToMuch(this.selectorsMap.pseudoElement)
+    )
+      throw Error(errMsg.tooMuch);
+    selectors.forEach((weight, i, weights) => {
+      if (weight > weights[i + 1]) throw Error(errMsg.badOrder);
+    });
   },
 
-  id(/* value */) {
-    throw new Error('Not implemented');
+  stringify() {
+    return this.result;
   },
 
-  class(/* value */) {
-    throw new Error('Not implemented');
+  element(value) {
+    this.checkSequance(this.selectorsMap.element);
+    return {
+      ...this,
+      result: this.result + value,
+      selectorParts: [...this.selectorParts, this.selectorsMap.element],
+    };
   },
 
-  attr(/* value */) {
-    throw new Error('Not implemented');
+  id(value) {
+    this.checkSequance(this.selectorsMap.id);
+    return {
+      ...this,
+      result: `${this.result}#${value}`,
+      selectorParts: [...this.selectorParts, this.selectorsMap.id],
+    };
   },
 
-  pseudoClass(/* value */) {
-    throw new Error('Not implemented');
+  class(value) {
+    this.checkSequance(this.selectorsMap.class);
+    return {
+      ...this,
+      result: `${this.result}.${value}`,
+      selectorParts: [...this.selectorParts, this.selectorsMap.class],
+    };
   },
 
-  pseudoElement(/* value */) {
-    throw new Error('Not implemented');
+  attr(value) {
+    this.checkSequance(this.selectorsMap.attribute);
+    return {
+      ...this,
+      result: `${this.result}[${value}]`,
+      selectorParts: [...this.selectorParts, this.selectorsMap.attribute],
+    };
   },
 
-  combine(/* selector1, combinator, selector2 */) {
-    throw new Error('Not implemented');
+  pseudoClass(value) {
+    this.checkSequance(this.selectorsMap.pseudoClass);
+    return {
+      ...this,
+      result: `${this.result}:${value}`,
+      selectorParts: [...this.selectorParts, this.selectorsMap.pseudoClass],
+    };
+  },
+
+  pseudoElement(value) {
+    this.checkSequance(this.selectorsMap.pseudoElement);
+    return {
+      ...this,
+      result: `${this.result}::${value}`,
+      selectorParts: [...this.selectorParts, this.selectorsMap.pseudoElement],
+    };
+  },
+
+  combine(selector1, combinator, selector2) {
+    return {
+      ...this,
+      result: `${selector1.stringify()} ${combinator} ${selector2.stringify()}`,
+    };
   },
 };
 
