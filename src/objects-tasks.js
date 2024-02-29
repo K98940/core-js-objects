@@ -17,8 +17,10 @@
  *    shallowCopy({a: 2, b: { a: [1, 2, 3]}}) => {a: 2, b: { a: [1, 2, 3]}}
  *    shallowCopy({}) => {}
  */
-function shallowCopy(/* obj */) {
-  throw new Error('Not implemented');
+function shallowCopy(obj) {
+  const o = {};
+  Object.assign(o, obj);
+  return o;
 }
 
 /**
@@ -210,11 +212,10 @@ function getJSON(obj) {
  *    const r = fromJSON(Circle.prototype, '{"radius":10}');
  *
  */
-function fromJSON(/* proto, json */) {
-  throw new Error('Not implemented');
-  // const obj = JSON.parse(json);
-  // console.log('proto =', proto);
-  // console.log('json =', json);
+function fromJSON(proto, json) {
+  const j = JSON.parse(json);
+  const param = Object.values(j);
+  return new proto.constructor(...param);
 }
 
 /**
